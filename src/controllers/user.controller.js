@@ -17,8 +17,9 @@ const registerUser = asyncHandler(async (req, res) => {
     // 9. return res
 
     // Step 2
+    const {fullName, email, username, password } = req.body
     if (
-        [fullName, email, userName, password].some(
+        [fullName, email, username, password].some(
             (fields) => fields?.trim() === ""
         )
     ) {
@@ -26,8 +27,8 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // Step 3
-    const existedUser = User.findOne({
-        $or: [{ userName }, { email }],
+    const existedUser = await User.findOne({
+        $or: [{ username }, { email }],
     });
     if (existedUser) {
         throw new ApiError(409, "User with username and email already exist")
@@ -55,7 +56,7 @@ const registerUser = asyncHandler(async (req, res) => {
         coverImage: coverImage?.url || "",
         email,
         password,
-        userName: userName.toLowerCase()
+        username: username.toLowerCase()
     })
 
 
@@ -68,9 +69,9 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     // Step 8
-    return res.status(201, json{
+    return res.status(201).json(
         new ApiResponse(200, createdUser, "User registered successfully")
-    })
+    )
 });
 
 export { registerUser };
